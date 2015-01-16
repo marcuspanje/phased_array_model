@@ -10,9 +10,9 @@ xstep = X(2)-X(1);
 ystep = Y(2)-Y(1);
 
 %speaker positions
-x0 = 1; y0 = 0;
-x1 = -1; y1 = 0;
-
+x0 = 0.5; y0 = 0;
+x1 = -0.5; y1 = 0;
+x2 = 0; y2 = 0;
 %polar plot
 thetas = 0:0.01:2*pi;
 nthetas = numel(thetas);
@@ -25,10 +25,12 @@ for i = X(1):xstep:X(nx)
     for j = Y(1):ystep:Y(ny)
         r0 = sqrt((i-x0)^2 + (j-y0)^2);
         r1 = sqrt((i-x1)^2 + (j-y1)^2);
-        S(x, y) = A*cos(2*pi*r0/lambda) + A*cos(2*pi*r1/lambda);
+        r2 = sqrt((i-x2)^2 + (j-y2)^2);
+        S(x, y) = A*cos(2*pi*r0/lambda) + A*cos(2*pi*r1/lambda) + A*cos(2*pi*r2/lambda);
 
         %polar coordinates
-        theta = atan(j/i);
+        %atan2 ret negatives angles, mod operations takes care of this
+        theta = mod(2*pi + atan2(j, i), 2*pi);
         [M, I] = min(abs(thetas - theta));
         ncols = numel(r(I, :));
         r(I, ncols+1) = abs(S(x, y));
@@ -39,7 +41,7 @@ for i = X(1):xstep:X(nx)
     y = 1;
 end
 
-%mean returns array of the means of each col.
+%mean returns an array of the means of each col.
 %to get mean of each row, get mean of transpose of matrix (A.')
 r1 = mean(r.'); 
 r2 = r1/max(r1);
