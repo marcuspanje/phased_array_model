@@ -1,4 +1,4 @@
-f = 1000; %frequency
+f = 40000; %frequency
 lambda = 340/f;
 A = 10; %coeff
 nx = 100;
@@ -13,6 +13,9 @@ ystep = Y(2)-Y(1);
 x0 = 0.5; y0 = 0;
 x1 = -0.5; y1 = 0;
 x2 = 0; y2 = 0;
+d0 = pi/4;
+d1 = 0;
+d2 = -pi/4;
 %polar plot
 thetas = 0:0.01:2*pi;
 nthetas = numel(thetas);
@@ -26,7 +29,7 @@ for i = X(1):xstep:X(nx)
         r0 = sqrt((i-x0)^2 + (j-y0)^2);
         r1 = sqrt((i-x1)^2 + (j-y1)^2);
         r2 = sqrt((i-x2)^2 + (j-y2)^2);
-        S(x, y) = A*cos(2*pi*r0/lambda) + A*cos(2*pi*r1/lambda) + A*cos(2*pi*r2/lambda);
+        S(x, y) = A*cos(2*pi*r0/lambda + d0) + A*cos(2*pi*r1/lambda + d1) + A*cos(2*pi*r2/lambda + d2);
 
         %polar coordinates
         %atan2 ret negatives angles, mod operations takes care of this
