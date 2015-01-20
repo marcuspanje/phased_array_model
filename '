@@ -26,11 +26,10 @@ nx = numel(X); nz = numel(Z);
 S = zeros(nx, nz);
 
 %polar plot
-theta_step = 0.001;
+theta_step = 0.01;
 theta = 0:theta_step:2*pi-theta_step;
-ntheta = numel(theta);
 %values of signal strength along a line from an angle from center
-rho = -1*ones(ntheta, nx*nz+1); %make each value -2 to  
+rho = zeros(numel(theta), 1);
 
 %measure signals across the y = 0, xz plane
 x = 1; z = 1;
@@ -44,8 +43,8 @@ for i = X(1) : xstep : X(nx)
         %sig strengths from that angle
         angle = mod(2*pi + atan2(k, i), 2*pi); 
         [M, I] = min(abs(theta-angle));
-        curr_index = nnz(rho(I, :) + 1);%get next index that is not -1
-        rho(I, curr_index + 1) = S(x, z) - 1;
+        ncols = numel(rho(I, :));
+        rho(I, ncols + 1) = S(x, z);
 
         z = z+1;
     end
@@ -59,17 +58,9 @@ zhandle = colorbar;
 
 %get mean of sig strength at every angle and normalize
 %to get mean of each row, get mean of transpose
-rho1 = rho + 1;
-rad = zeros(1, ntheta);
-
-for i = 1:ntheta
-    sigs_alng_line = rho1(i, :);
-    rad(i) = sum(sigs_alng_line)/nnz(sigs_alng_line); 
-end
-
-
+rho1 = mean(rho.');
+rho1 = rho1/max(rho1);
 figure;
-rad = rad./max(rad);
-polar(theta, rad, '.');
+polar(theta, rho1, '-');
 
 
