@@ -1,30 +1,15 @@
-f = 40000; %frequency = 40 kHz
-lambda = 1000*340/f; %wavelength in mm;
+%Plotting function for phased array model.
+%Maps out a plane orthogonal to speaker surface, and plots 
+%cumulative signal amplitude in xy and polar coords
 
-%coordinates of X, Y positions from center in mm
-numx = 5; numy = 8;
-X1 = linspace(-40.5, 31.5, numx);
-X2 = linspace(-31.5, 40.5, numx);
-posX = [X1; X2; X1; X2; X1; X2; X1; X2];
+%Input: posX, posY, posZ are vectors of coords of speakers, with 
+%origin at board center. 
+%posX(i), posY(i), posZ(i), phase(i) refer to one source
+%lambda is signal wavelength
+%Output S: signal ampl  according to coords,
+%S_angle: signal ampl according to angle
 
-Y1 = transpose(linspace(-59.5, 59.5, numy));
-posY = [Y1 Y1 Y1 Y1 Y1];
-posZ = zeros(numy, numx);
-phi = degtorad(30);
-
-%create phase matrix
-phase1 = [0 2*phi 4*phi 6*phi 8*phi];
-phase2 = [phi 3*phi 5*phi 7*phi 9*phi];
-phase = [phase1;phase2;phase1;phase2];
-phase = [phase;phase];
- 
-%simple values first:
-%numx = 2; numy = 2; %no of speaker elements along xyplane
-%posX = [-100];
-%posY = [0];
-%posZ = [0];
-%phase = [0];
-
+function [S, S_angle] = plot_phased_array(posX, posY, posZ, phase, lambda)
 %scale of model in mm
 xstep = 10; zstep = 10;
 X = -200:xstep:200; 
