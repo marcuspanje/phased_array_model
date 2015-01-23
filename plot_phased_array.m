@@ -48,11 +48,6 @@ for i = X(1) : xstep : X(nx)
     z = 1;
 end
 
-figure;
-surf(S);
-set(gca, 'Ydir', 'reverse') %make x axis go from L-> R
-zhandle = colorbar;
-
 %get mean of sig strength at every angle.
 %-1 values are NaN, so +1 and use nnz() to disregard zero values
 rho1 = rho + 1;
@@ -63,8 +58,14 @@ for i = 1:ntheta
     S_angle(i) = sum(sigs_alng_line)/nnz(sigs_alng_line); 
 end
 
-
 figure;
+subplot(1, 2, 1);
+surf(S);
+set(gca, 'Ydir', 'reverse') %make x axis go from L-> R
+view(-90, 90);
+zhandle = colorbar;
+
+subplot(1, 2, 2);
 S_angle = S_angle./max(S_angle);
 polar(theta, S_angle, '.');
 
