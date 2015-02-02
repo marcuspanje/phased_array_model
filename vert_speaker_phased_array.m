@@ -10,7 +10,7 @@ posX = [X1; X2; X1; X2; X1; X2; X1; X2];
 Y1 = transpose(linspace(-59.5, 59.5, numy));
 posY = [Y1 Y1 Y1 Y1 Y1];
 posZ = zeros(numy, numx);
-phi = 0*pi;
+phi = pi;
 
 %create phase matrix
 phase1 = [0 2*phi 4*phi 6*phi 8*phi];
