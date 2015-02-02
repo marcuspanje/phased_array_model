@@ -13,7 +13,7 @@ Y1 = transpose(linspace(-42.5, 42.5, numy)); %col vector
 posY = [Y1 Y1 Y1 Y1 Y1 Y1 Y1];
 
 posZ = zeros(numy, numx);
-phi = 0;
+phi = 1.75*pi;
 
 %create phase matrix
 phase1 = [0 2*phi 4*phi 6*phi 8*phi 10*phi 12*phi];
