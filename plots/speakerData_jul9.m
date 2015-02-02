@@ -1,0 +1,20 @@
+%plot speaker Data in a polar plot
+
+array198 = 'B5:G10';
+normal = 'B14:G19';
+soundlazer = 'B23:G28';
+data = xlsread('speakerData_jul9.xlsx', normal);
+deg30 = pi/6; deg60 = pi/3;
+theta = [0 0 deg30 deg30 deg60 deg60];
+%get average of low and high
+mean_data = mean(data);
+me = zeros(1, 3);
+j = 1;
+for i = 1:2:5
+    me(j) = mean([mean_data(i); mean_data(i+1)]);
+    j = j+1;
+end
+me = me/max(me);
+rho = [me(1) 0  me(2) 0 me(3) 0];
+polar(theta, rho, '-');
+
