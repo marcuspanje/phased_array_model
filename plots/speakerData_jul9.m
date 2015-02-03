@@ -32,13 +32,13 @@ fig  = figure;
 subplot(1, 2, 1);
 rho_normal = [me_normal(1) 0  me_normal(2) 0 me_normal(3) 0];
 polar(theta, rho_normal, 'b');
-view(-90, 90);
+view(-270, -90);
 title('Regular Speakers', 'FontSize', 15);
 
 subplot(1, 2, 2);
 rho_arr198 = [me_arr198(1) 0  me_arr198(2) 0 me_arr198(3) 0];
 polar(theta, rho_arr198, 'r');
-view(-90, 90);
+view(-270, -90);
 title('Ultrasonic Speakers', 'FontSize', 15);
-
+text(10, 10, 'Rel. Signal Strength by Angle', 'FontSize', 20);
 
