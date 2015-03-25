@@ -1,5 +1,6 @@
 f = 40000; %frequency = 40 kHz
 lambda = 1000*340/f; %wavelength in mm;
+sound_speed = 330;
 
 %coordinates of X, Y positions from center in mm
 numx = 5; numy = 8;
@@ -10,13 +11,13 @@ posX = [X1; X2; X1; X2; X1; X2; X1; X2];
 Y1 = transpose(linspace(-59.5, 59.5, numy));
 posY = [Y1 Y1 Y1 Y1 Y1];
 posZ = zeros(numy, numx);
-phi = degtorad(30);
+tdu = 0.5;%time delay unit
 
-%create phase matrix
-phase1 = [0 2*phi 4*phi 6*phi 8*phi];
-phase2 = [phi 3*phi 5*phi 7*phi 9*phi];
-phase = [phase1;phase2;phase1;phase2];
-phase = [phase;phase];
+%create time delay matrix
+td1 = [0 2*tdu 4*tdu 6*tdu 8*tdu];
+td2 = [tdu 3*tdu 5*tdu 7*tdu 9*tdu];
+td = [td1;td2;td1;td2];
+td = [td;td];
  
 %simple values first:
 %numx = 2; numy = 2; %no of speaker elements along xyplane
@@ -44,7 +45,8 @@ x = 1; z = 1;
 for i = X(1) : xstep : X(nx)
     for k = Z(1) : zstep : Z(nz)
         radiuses = sqrt( (posX-i).^2 + (posY).^2 + (posZ-k).^2 ); 
-        signals = cos(2*pi*radiuses/lambda + phase); %assume no phase now
+        t = radiuses/sound_speed;
+        signals = cos(2*pi*t + td);
         S(x, z) = abs(sum(sum(signals)));%sig strength at a point
         
         %compute angle from center and add sig strength to list of 

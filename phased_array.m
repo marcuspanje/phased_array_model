@@ -1,21 +1,28 @@
-f = 40000; %frequency
 lambda = 340/f;
+v = 340;
 A = 10; %coeff
 nx = 100;
 ny = 100;
-X = linspace(-2, 2, nx);
-Y = linspace(-2, 2, ny);
+
+%model dimensions in meters
+X = linspace(-0.5, 0.5, nx);
+Z = linspace(0, 1, ny);
 S = zeros(nx, ny);
+times = zeros(nx, ny);
 xstep = X(2)-X(1);
-ystep = Y(2)-Y(1);
+zstep = Z(2)-Z(1);
+
+%sig = &(t, tdelay) 10*cos(2*pi*1000*(t-tdelay));
 
 %speaker positions
-x0 = 0.5; y0 = 0;
-x1 = -0.5; y1 = 0;
-x2 = 0; y2 = 0;
-d0 = pi/4;
-d1 = 0;
-d2 = -pi/4;
+x0 = 0.005; y0 = 0; z0 = 0;
+x1 = -0.005; y1 = 0; z1 = 0;
+px = [x0 x1];
+py = [y0 y1];
+pz = [z0 z1];
+%td = [1.473e-3 0];% time delay in seconds
+td = [1.473e-3 0];% time delay in seconds
+
 %polar plot
 thetas = 0:0.01:2*pi;
 nthetas = numel(thetas);
@@ -24,12 +31,13 @@ r = zeros(nthetas, 1);
 %counters
 x = 1; y = 1;
 
+
+
 for i = X(1):xstep:X(nx)
-    for j = Y(1):ystep:Y(ny)
-        r0 = sqrt((i-x0)^2 + (j-y0)^2);
-        r1 = sqrt((i-x1)^2 + (j-y1)^2);
-        r2 = sqrt((i-x2)^2 + (j-y2)^2);
-        S(x, y) = A*cos(2*pi*r0/lambda + d0) + A*cos(2*pi*r1/lambda + d1) + A*cos(2*pi*r2/lambda + d2);
+    for k = Z(1):zstep:Z(ny)
+        radii = sqrt((i-px).^2 + (py).^2 + (k-pz).^2); 
+        t = radii/v;
+        S(x, y) = sum(10*cos(2*pi*(t + td)));  
 
         %polar coordinates
         %atan2 ret negatives angles, mod operations takes care of this
@@ -54,3 +62,4 @@ polar(thetas, r2);
 figure;
 surf(abs(S));
 zhandle = colorbar;
+view(-90, 90);

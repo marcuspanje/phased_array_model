@@ -5,13 +5,16 @@
 %Input: posX, posY, posZ are vectors of coords of speakers, with 
 %origin at board center. 
 %posX(i), posY(i), posZ(i), phase(i) refer to one source
-%lambda is signal wavelength
+%theta_peak is the angle of the desired max from the normal
+%td is the unit time delay between consecutive cols
+%theta_peak and td are calculated outside
 %Output S: signal ampl  according to coords,
 %S_angle: signal ampl according to angle
 
-function [S, S_angle] = plot_phased_array(posX, posY, posZ, phase, lambda)
+function [S, S_angle] = plot_phased_array(posX, posY, posZ, delay, theta_peak, td)
 %scale of model in mm
 xstep = 10; zstep = 10;
+v = 340e3;%speed of sound in mm/s
 X = -200:xstep:200; 
 Z = 0:zstep:1000;
 nx = numel(X); nz = numel(Z);
@@ -29,7 +32,8 @@ x = 1; z = 1;
 for i = X(1) : xstep : X(nx)
     for k = Z(1) : zstep : Z(nz)
         radiuses = sqrt( (posX-i).^2 + (posY).^2 + (posZ-k).^2 ); 
-        signals = cos(2*pi*radiuses/lambda + phase); %assume no phase now
+        t = radiuses/v;
+        signals = cos(2*pi*40000*(t-delay));
         S(x, z) = abs(sum(sum(signals)));%sig strength at a point
         
         %compute angle from center and add sig strength to list of 
@@ -60,9 +64,7 @@ for i = 1:ntheta
     S_angle(i) = sum(sigs_alng_line)/nnz(sigs_alng_line); 
 end
 
-phase_deg = round(phase(2)*180/pi);
 figure('Position', [100 100 1200 500]);
-%title(strcat('phase = ', int2str(phase_deg)))
 planeplot = subplot(1, 2, 1);
 surf(S_normalized);
 set(gca, 'Ydir', 'reverse') %make x axis go from L-> R
@@ -72,6 +74,6 @@ zhandle = colorbar;
 angularplot = subplot(1, 2, 2);
 S_angle = S_angle./max(S_angle);
 polar(theta, S_angle, '.');
-titlestr = strcat({'Signal strength by position, phi = '}, {int2str(phase_deg)});
-title(planeplot, titlestr, 'FontSize', 20);
+str_title = sprintf('Signal strength map:\n phiPeak = %d deg, td = %.5f ms', theta_peak, td*1000)
+title(planeplot, str_title, 'FontSize', 20);
 
