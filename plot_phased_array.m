@@ -5,13 +5,14 @@
 %Input: posX, posY, posZ are vectors of coords of speakers, with 
 %origin at board center. 
 %posX(i), posY(i), posZ(i), phase(i) refer to one source
+%fund_f is the main pwm frequency of the sawtooth wave. The strongest frequency
 %theta_peak is the angle of the desired max from the normal
 %td is the unit time delay between consecutive cols
 %theta_peak and td are calculated outside
 %Output S: signal ampl  according to coords,
 %S_angle: signal ampl according to angle
 
-function [S, S_angle] = plot_phased_array(posX, posY, posZ, delay, theta_peak, td)
+function [S, S_angle] = plot_phased_array(posX, posY, posZ, fund_f, delay, theta_peak, td)
 %scale of model in mm
 xstep = 10; zstep = 10;
 v = 340e3;%speed of sound in mm/s
@@ -27,13 +28,51 @@ ntheta = numel(theta);
 %values of signal strength along a line from an angle from center
 rho = -1*ones(ntheta, nx*nz+1); %make each value -2 to  
 
+%generate signal
+Fsig = 100;
+Fs = 300000;
+t = 0:1/Fs:1;
+len = max(size(t));
+half_len = round(ceil(len/2));
+
+base_signal = 1.5*cos(2*pi*Fsig*t);
+
+%pulse width modulation
+Fswth = fund_f;
+t_off = 0;
+swth = 2.5*sawtooth(2*pi*Fswth*t) + 2.5;
+
+%pwm(input, sawtooth, high, Vdc, fout, Fs, max_dutycycle)
+%Vdc is offset voltage added on to input
+Vdc = 2.5;
+Xpwm = pwm(base_signal, swth, 5.0, Vdc, Fswth, Fs, 0.99);
+figure();
+subplot(2, 1, 1);
+plot(t, base_signal + Vdc, t, swth, t, Xpwm);
+xlabel('t');
+ylabel('V');
+
+FX = fft(Xpwm);
+FX = abs(FX)/len;
+FX = 2*FX(1:half_len);
+w = linspace(0, Fs/2, half_len);
+
+subplot(2, 1, 2);
+plot(w, FX);
+xlabel('f');
+ylabel('M');
+
 %measure signals across the y = 0, xz plane
 x = 1; z = 1;
 for i = X(1) : xstep : X(nx)
     for k = Z(1) : zstep : Z(nz)
         radiuses = sqrt( (posX-i).^2 + (posY).^2 + (posZ-k).^2 ); 
         t = radiuses/v;
-        signals = cos(2*pi*40000*(t-delay));
+        %convert time to discrete indices
+        ind = round(t*Fs);
+        delay_ind = round(delay*Fs); 
+
+        signals = Xpwm(round(1 + mod(ind - delay_ind, signal_len)));
         S(x, z) = abs(sum(sum(signals)));%sig strength at a point
         
         %compute angle from center and add sig strength to list of 
