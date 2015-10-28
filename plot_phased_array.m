@@ -2,15 +2,26 @@
 %Maps out a plane orthogonal to speaker surface, and plots 
 %cumulative signal amplitude in xy and polar coords
 
-%Input: posX, posY, posZ are vectors of coords of speakers, with 
+%Input: posX, posY, posZ are coords of speakers, with 
 %origin at board center. 
 %posX(i), posY(i), posZ(i), phase(i) refer to one source
-%fund_f is the main pwm frequency of the sawtooth wave. The strongest frequency
-%theta_peak is the angle of the desired max from the normal
-%td is the unit time delay between consecutive cols
-%theta_peak and td are calculated outside
-%Output S: signal ampl  according to coords,
-%S_angle: signal ampl according to angle
+
+%Delay_i is the Delay matrix of each transducer, in time indices that correlate to the sampling frequency Fs
+%The delays are interleaved as follows:
+%0 2 4 
+% 1 3 5
+%0 2 4
+% 1 4 5
+
+%xlen is the length of the xaxis of the model in mm, xstep is the sampling frequency for the xaxis
+%same for zlen, zstep
+
+%sig is the signal 
+%Fs is the sampling frequency of the signal
+
+%theta_label is the angle between normal and sound beam
+%td is the time delay between each speaker column
+%td and theta_label are just used to label the plot
 
 function [S, S_angle] = plot_phased_array(posX, posY, posZ, Delay_i, xlen, xstep, zlen, zstep, sig, Fs, theta_label, td)
 
@@ -44,8 +55,7 @@ for i = 1:nx
 
         %convert time to discrete indices
         ind = round(t*Fs);
-
-        signals = sig(signal_len_half - ind - Delay_i);
+        signals = sig(round(signal_len_half - ind - Delay_i));
         S(i, k) = abs(sum(sum(signals)));%sig strength at a point
         
         %compute angle from center, and get index of closest discretized angle.

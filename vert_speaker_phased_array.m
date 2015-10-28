@@ -54,7 +54,7 @@ Xpwm = pwm(base_signal, swth, 5.0, Vdc, Fswth, Fs, 0.99);
 %----------------------
 
 %theta is desired degree of beam from normal
-theta = 15;
+theta = 5;
 td = (posX(2)-posX(1))*sind(theta)/(1000*340); 
 
 %td = 10.851E-6;
@@ -69,10 +69,10 @@ Delay_i = delay * Fs;
 %----------------------
 %plot_phased_array
 %---------------------
-xlen = 400;
-xstep = 10;
-zlen = 1000;
-zstep = 10;
+xlen = 5000;
+xstep = 50;
+zlen = 5000;
+zstep = 50;
  
 plot_phased_array(posX, posY, posZ, Delay_i, xlen, xstep, zlen, zstep, Xpwm, Fs, theta, td);
 

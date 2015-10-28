@@ -18,11 +18,20 @@ swth = 2.5*sawtooth(2*pi*Fswth*t) + 2.5;
 Vdc = 2.5;
 Xpwm = pwm(base_signal, swth, 5.0, Vdc, Fswth, Fs, 0.99);
 
-plot(t, base_signal + Vdc, t, Xpwm, t, swth);
 XF = abs(fft(Xpwm))/len;
 len_2 = round(ceil(len)/2);
 XF = XF(1:len_2);
 w = linspace(0, Fs/2, len_2);
-figure();
-plot(w, XF);
 
+figure();
+subplot(1, 2, 1);
+plot(t, base_signal + Vdc, t, Xpwm, t, swth);
+title('PWM_f = 40kHz, signal_f = 1kHz');
+xlabel('t');
+ylabel('signals');
+
+subplot(1, 2, 2);
+plot(w, XF);
+title('fft of pwm');
+xlabel('w');
+ylabel('frequency');
